@@ -1,15 +1,16 @@
 {
   "owner": "YZhiJie",
-  "syncedAt": "2026-10-21T10:37:28.488Z",
+  "syncedAt": "2026-10-21T10:44:01.570Z",
   "stats": {
-    "total": 20,
-    "online": 20,
+    "total": 21,
+    "online": 21,
     "offline": 0,
     "unknown": 0,
     "privateSources": 17,
-    "categories": 8
+    "categories": 9
   },
   "categories": [
+    "本站",
     "前端基础与进阶",
     "框架与生态",
     "工程化与运维",
@@ -20,6 +21,30 @@
     "AI 与职业"
   ],
   "projects": [
+    {
+      "pagesRepo": "pages-hub",
+      "pagesRepoUrl": "https://github.com/YZhiJie/pages-hub",
+      "siteUrl": "https://yzhijie.github.io/pages-hub/",
+      "sourceRepo": "pages-hub",
+      "sourceUrl": "https://github.com/YZhiJie/pages-hub",
+      "sourcePrivate": false,
+      "title": "Pages Hub · GitHub Pages 项目导航",
+      "summary": "汇总全部 GitHub Pages 在线站点与源码仓库的导航站，支持定时同步与浏览器端实时校准。",
+      "category": "本站",
+      "tags": [
+        "导航",
+        "GitHub Pages",
+        "自动化同步"
+      ],
+      "branch": "main",
+      "buildType": "workflow",
+      "cname": "",
+      "status": "online",
+      "httpStatus": 200,
+      "lastDeployAt": "2026-10-21T10:42:10Z",
+      "sourceUpdatedAt": "2026-10-21T10:42:10Z",
+      "order": 0
+    },
     {
       "pagesRepo": "css3-html5-handbook-site",
       "pagesRepoUrl": "https://github.com/YZhiJie/css3-html5-handbook-site",

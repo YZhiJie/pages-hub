@@ -3,10 +3,11 @@
 > 本页由 `pnpm sync` 自动生成，最近同步：2026/10/21（Asia/Shanghai）。
 > 请勿手动编辑；如需调整标题、简介或分类，请修改 `data/catalog.json`。
 
-共 20 个站点：在线 20 个，异常 0 个，覆盖 8 个分类。
+共 21 个站点：在线 21 个，异常 0 个，覆盖 9 个分类。
 
 | 项目 | 分类 | 在线站点 | 源码仓库 | 部署仓库 | 状态 | 部署仓最近更新 |
 | --- | --- | --- | --- | --- | --- | --- |
+| Pages Hub · GitHub Pages 项目导航 | 本站 | [在线站点](https://yzhijie.github.io/pages-hub/) | [源码仓库](https://github.com/YZhiJie/pages-hub) | [部署仓库](https://github.com/YZhiJie/pages-hub) | 在线 (200) | 2026/10/21 |
 | CSS3 & HTML5 高级特性实战手册 | 前端基础与进阶 | [在线站点](https://yzhijie.github.io/css3-html5-handbook-site/) | [私有仓库](https://github.com/YZhiJie/css3-html5-handbook) | [部署仓库](https://github.com/YZhiJie/css3-html5-handbook-site) | 在线 (200) | 2026/10/21 |
 | 高级前端进阶技能指南 | 前端基础与进阶 | [在线站点](https://yzhijie.github.io/frontend-advanced-guide-site/) | [私有仓库](https://github.com/YZhiJie/frontend-advanced-guide) | [部署仓库](https://github.com/YZhiJie/frontend-advanced-guide-site) | 在线 (200) | 2026/10/21 |
 | Frontend KB · 前端岗位知识补给站 | 前端基础与进阶 | [在线站点](https://yzhijie.github.io/frontend-kb-pages/) | [私有仓库](https://github.com/YZhiJie/frontend-kb) | [部署仓库](https://github.com/YZhiJie/frontend-kb-pages) | 在线 (200) | 2026/10/20 |
