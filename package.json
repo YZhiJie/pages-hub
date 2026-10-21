@@ -1,0 +1,17 @@
+{
+  "name": "pages-hub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Pages 在线站点与源码仓库的一站式导航",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "sync": "node scripts/sync-pages.mjs",
+    "dev": "pnpm sync && vitepress dev",
+    "build": "pnpm sync && vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
