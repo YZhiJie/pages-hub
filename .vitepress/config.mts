@@ -6,7 +6,7 @@ export default defineConfig({
   lang: "zh-CN",
   title: "Pages Hub",
   description:
-    "全部 GitHub Pages 在线站点与源码仓库的一站式导航，定时同步、实时校准",
+    "全部 GitHub Pages 在线站点与源码仓库的一站式导航，手动同步、实时校准",
   base: "/pages-hub/",
   cleanUrls: true,
   srcExclude: ["README.md"],
@@ -52,7 +52,7 @@ export default defineConfig({
       },
     },
     footer: {
-      message: "数据由 GitHub API 自动同步，每 30 分钟刷新一次",
+      message: "数据由 GitHub API 手动同步，页面内每 5 分钟自动校准",
       copyright: "Pages Hub",
     },
   },

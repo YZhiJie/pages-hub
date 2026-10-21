@@ -1,6 +1,6 @@
 {
   "owner": "YZhiJie",
-  "syncedAt": "2026-10-21T10:44:01.570Z",
+  "syncedAt": "2026-10-21T10:52:27.898Z",
   "stats": {
     "total": 21,
     "online": 21,
@@ -29,20 +29,20 @@
       "sourceUrl": "https://github.com/YZhiJie/pages-hub",
       "sourcePrivate": false,
       "title": "Pages Hub · GitHub Pages 项目导航",
-      "summary": "汇总全部 GitHub Pages 在线站点与源码仓库的导航站，支持定时同步与浏览器端实时校准。",
+      "summary": "汇总全部 GitHub Pages 在线站点与源码仓库的导航站，支持手动同步与浏览器端实时校准。",
       "category": "本站",
       "tags": [
         "导航",
         "GitHub Pages",
-        "自动化同步"
+        "手动同步"
       ],
       "branch": "main",
       "buildType": "workflow",
       "cname": "",
       "status": "online",
       "httpStatus": 200,
-      "lastDeployAt": "2026-10-21T10:42:10Z",
-      "sourceUpdatedAt": "2026-10-21T10:42:10Z",
+      "lastDeployAt": "2026-10-21T10:44:05Z",
+      "sourceUpdatedAt": "2026-10-21T10:44:05Z",
       "order": 0
     },
     {
@@ -65,8 +65,8 @@
       "cname": "",
       "status": "online",
       "httpStatus": 200,
-      "lastDeployAt": "2026-10-21T08:10:48Z",
-      "sourceUpdatedAt": "2026-10-21T08:09:59Z",
+      "lastDeployAt": "2026-10-21T10:47:24Z",
+      "sourceUpdatedAt": "2026-10-21T10:46:48Z",
       "order": 1
     },
     {

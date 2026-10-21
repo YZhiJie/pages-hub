@@ -274,8 +274,8 @@ onBeforeUnmount(() => {
 
     <p class="ph-note">
       构建期快照：{{ formatTime(lastChecked) }}（Asia/Shanghai）。打开页面后每 5
-      分钟自动校准站点可达性与公开仓库更新时间；完整数据由 GitHub Actions 每 30
-      分钟同步一次。
+      分钟自动校准站点可达性与公开仓库更新时间；完整数据由 GitHub Actions
+      手动同步。
       <span v-if="errorMessage" class="ph-error">{{ errorMessage }}</span>
     </p>
   </section>

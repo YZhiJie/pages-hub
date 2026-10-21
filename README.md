@@ -1,6 +1,6 @@
 # Pages Hub
 
-全部 GitHub Pages 在线站点与源码仓库的一站式导航。定时同步站点地址、源码仓库、部署状态与最近更新时间，并在页面打开期间实时校准可达性。
+全部 GitHub Pages 在线站点与源码仓库的一站式导航。手动同步站点地址、源码仓库、部署状态与最近更新时间，并在页面打开期间实时校准可达性。
 
 - 在线站点：<https://yzhijie.github.io/pages-hub/>
 - 部署仓库：<https://github.com/YZhiJie/pages-hub>
@@ -12,7 +12,7 @@
 
 1. **统一入口**：所有 Pages 站点按分类集中展示，支持关键词、分类、状态筛选。
 2. **链路可追溯**：每个站点同时给出「在线地址 / 源码仓库 / 部署仓库」，私有源码明确标注。
-3. **状态可感知**：构建期探测 HTTP 状态，页面内每 5 分钟重新校准；CI 每 30 分钟全量同步。
+3. **状态可感知**：构建期探测 HTTP 状态，页面内每 5 分钟重新校准；Actions 手动触发全量同步。
 
 详细说明见站点内「网站作用」与「同步机制」两页。
 
@@ -51,7 +51,7 @@ GITHUB_TOKEN=xxx pnpm sync
 - **源码映射**：优先使用 `data/catalog.json`；未登记项目按提交信息、命名后缀与描述推断。
 - **状态探测**：对每个在线地址发起 HEAD 请求，记录状态码；超时或非 2xx/3xx 记为异常。
 - **产物**：写入 `data/projects.json` 与 `projects.md`，构建时被打包进站点。
-- **CI**：`push`、`schedule`（每 30 分钟）、`workflow_dispatch` 三种触发方式，构建并发布到 GitHub Pages。
+- **CI**：仅 `workflow_dispatch` 手动触发，执行同步、构建并发布到 GitHub Pages。
 
 ### 私有源码仓库
 

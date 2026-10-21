@@ -1,12 +1,9 @@
 # 文件: .github/workflows/deploy.yml
-# 用途: 定时同步 Pages 项目数据，构建 VitePress 站点并发布到 GitHub Pages
+# 用途: 手动同步 Pages 项目数据，构建 VitePress 站点并发布到 GitHub Pages
+# 触发: 仅 workflow_dispatch（仓库 Actions 页面点击 Run workflow，或 gh workflow run）
 name: deploy-pages-hub
 
 on:
-  push:
-    branches: [main]
-  schedule:
-    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:
