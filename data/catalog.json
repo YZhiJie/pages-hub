@@ -7,6 +7,8 @@
     "工程化与运维",
     "源码与原理",
     "可视化与组件",
+    "语言与后端",
+    "移动与跨端",
     "架构与实战",
     "全栈与 IoT",
     "AI 与职业"
@@ -200,6 +202,168 @@
       "category": "AI 与职业",
       "tags": ["AI 前端", "SSE", "RAG"],
       "sourcePrivate": true
+    },
+    {
+      "pagesRepo": "rust-tutorial-site",
+      "sourceRepo": "rust-tutorial",
+      "title": "Rust 精通之路",
+      "summary": "六阶段 18 章 Rust 中文教程，覆盖所有权、trait、并发、异步与宏，支持在线编辑运行。",
+      "category": "语言与后端",
+      "tags": ["Rust", "系统编程", "在线运行"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "wechat-docs-site",
+      "sourceRepo": "wechat-docs-site",
+      "title": "微信小程序与公众号开发教程",
+      "summary": "零基础漫画图文教程，覆盖小程序组件、分包、云开发与公众号菜单、OAuth、JSSDK。",
+      "category": "移动与跨端",
+      "tags": ["微信小程序", "公众号", "漫画教程"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "swift-objc-enterprise-guide-site",
+      "sourceRepo": "swift-objc-enterprise-guide",
+      "title": "Swift & Objective-C 企业级应用开发教程",
+      "summary": "面向企业级 Apple 平台开发的系统教程，覆盖 Swift 6、ObjC 运行时、混编、性能安全与上架流程。",
+      "category": "移动与跨端",
+      "tags": ["Swift", "Objective-C", "iOS"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "frontend-testing-guide-site",
+      "sourceRepo": "frontend-testing-guide",
+      "title": "前端测试从基础到精通",
+      "summary": "13 话漫画 + 13 章正文 + 12 个可运行 Lab，覆盖 Vitest、组件测试、Playwright 与 CI 质量门禁。",
+      "category": "工程化与运维",
+      "tags": ["前端测试", "Vitest", "Playwright"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "vue3-features-lab-site",
+      "sourceRepo": "vue3-features-lab",
+      "title": "Vue 3 新特性实验室",
+      "summary": "16 章 Vue 3.5 特性实验，每章配可编辑代码与实时预览，覆盖组合式 API、响应式与渲染函数。",
+      "category": "框架与生态",
+      "tags": ["Vue 3", "在线实验", "响应式"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "nextjs-tutorial-site",
+      "sourceRepo": "nextjs-tutorial",
+      "title": "Next.js 16.3 全栈实战教程",
+      "summary": "以 Next.js 16.3 为基准的系统教程，覆盖路由、Server Components、缓存、Server Actions、认证与部署。",
+      "category": "框架与生态",
+      "tags": ["Next.js", "React", "全栈"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "kotlin-gradle-enterprise-guide-site",
+      "sourceRepo": "kotlin-gradle-enterprise-guide",
+      "title": "Kotlin & Gradle 企业级应用开发教程",
+      "summary": "覆盖 Kotlin 语言、Gradle 构建、JVM 后端与 Android 的企业级实战教程。",
+      "category": "语言与后端",
+      "tags": ["Kotlin", "Gradle", "JVM"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "react-native-academy-site",
+      "sourceRepo": "react-native-academy",
+      "title": "React Native 0.87.1 学院",
+      "summary": "基于 RN 0.87.1 源码的漫画解析与全栈实战教程，覆盖新架构、Hermes 与跨端开发。",
+      "category": "移动与跨端",
+      "tags": ["React Native", "源码解析", "跨端"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "wordpress-tutorial-site",
+      "sourceRepo": "wordpress-tutorial",
+      "title": "WordPress 从入门到精通系统教程",
+      "summary": "从建站、内容管理到主题插件开发、性能安全与迁移运维的 WordPress 系统教程。",
+      "category": "全栈与 IoT",
+      "tags": ["WordPress", "PHP", "建站"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "websocket-tutorial-site",
+      "sourceRepo": "websocket-tutorial",
+      "title": "WebSocket 完全教程",
+      "summary": "11 章从原理到生产实战，覆盖握手、心跳重连、鉴权、安全与 10 幕漫画课堂。",
+      "category": "全栈与 IoT",
+      "tags": ["WebSocket", "实时通信", "Node.js"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "threejs-tutorial-site",
+      "sourceRepo": "threejs-tutorial",
+      "title": "Three.js 系统教程",
+      "summary": "33 篇章节与 33 个可在线编辑的演示，覆盖 Three.js r186 的场景、材质、动画与着色器。",
+      "category": "可视化与组件",
+      "tags": ["Three.js", "WebGL", "3D"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "tauri-app-tutorial-site",
+      "sourceRepo": "tauri-app-tutorial",
+      "title": "Tauri v2 桌面应用开发教程",
+      "summary": "10 章从环境搭建到跨平台打包与自动更新，完成桌面笔记应用 AniNotes 的实战教程。",
+      "category": "移动与跨端",
+      "tags": ["Tauri", "Rust", "桌面应用"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "radix-shadcn-guide-pages",
+      "sourceRepo": "radix-shadcn-guide-pages",
+      "title": "Radix UI × shadcn/ui 实战教程",
+      "summary": "Radix UI + shadcn/ui + Tailwind CSS 从入门到精通，覆盖组件定制与实战。",
+      "category": "可视化与组件",
+      "tags": ["Radix UI", "shadcn/ui", "Tailwind CSS"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "micro-frontend-docs",
+      "sourceRepo": "micro-frontend-docs",
+      "title": "微前端实战地图",
+      "summary": "从 iframe 到 Module Federation：7 种主流微前端方案的原理、可运行示例与工程化落地。",
+      "category": "架构与实战",
+      "tags": ["微前端", "Module Federation", "架构"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "git-tutorial-site",
+      "sourceRepo": "git-tutorial",
+      "title": "Git 精通之路",
+      "summary": "由浅入深的中文 Git 教程，重点讲透企业级多人协作中的冲突处理与分支模型。",
+      "category": "工程化与运维",
+      "tags": ["Git", "版本控制", "协作"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "programmer-english-guide-site",
+      "sourceRepo": "programmer-english-guide",
+      "title": "程序员工作英语",
+      "summary": "面向中国程序员的技术英语实战教程：核心词汇、文档句式、技术写作与职场沟通。",
+      "category": "AI 与职业",
+      "tags": ["技术英语", "职场沟通", "技术写作"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "angular-tutorial-site",
+      "sourceRepo": "angular-tutorial",
+      "title": "Angular 精通之路",
+      "summary": "12 章渐进式 Angular 22 教程，示例可在浏览器中直接编辑运行，覆盖组件到框架原理。",
+      "category": "框架与生态",
+      "tags": ["Angular", "TypeScript", "在线运行"],
+      "sourcePrivate": false
+    },
+    {
+      "pagesRepo": "flutter-tutorial-site",
+      "sourceRepo": "flutter-tutorial",
+      "title": "Flutter 精通之路",
+      "summary": "由浅入深、可在线运行的 Flutter / Dart 中文教程。",
+      "category": "移动与跨端",
+      "tags": ["Flutter", "Dart", "跨端"],
+      "sourcePrivate": false
     }
   ]
 }

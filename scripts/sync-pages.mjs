@@ -183,13 +183,7 @@ function renderMarkdown(data) {
       : project.sourcePrivate
         ? `[私有](https://github.com/${owner}/${project.sourceRepo})`
         : `[源码](https://github.com/${owner}/${project.sourceRepo})`;
-    const status =
-      project.status === "online"
-        ? `在线 (${project.httpStatus})`
-        : project.status === "offline"
-          ? `异常${project.httpStatus ? ` (${project.httpStatus})` : ""}`
-          : "未知";
-    return `| ${project.title} | ${project.category} | [站点](${project.siteUrl}) | ${source} | [部署](https://github.com/${owner}/${project.pagesRepo}) | ${status} | ${formatDate(project.lastDeployAt)} |`;
+    return `| ${project.title} | ${project.category} | [站点](${project.siteUrl}) | ${source} | [部署](https://github.com/${owner}/${project.pagesRepo}) | ${formatDate(project.lastDeployAt)} |`;
   });
 
   return `---
@@ -205,8 +199,8 @@ pageClass: ph-projects-page
 
 <div class="ph-table-wrap">
 
-| 项目 | 分类 | 站点 | 源码 | 部署 | 状态 | 最近更新 |
-| --- | --- | --- | --- | --- | --- | --- |
+| 项目 | 分类 | 站点 | 源码 | 部署 | 最近更新 |
+| --- | --- | --- | --- | --- | --- |
 ${rows.join("\n")}
 
 </div>

@@ -236,7 +236,7 @@
   }
 }
 
-/* 全部项目页：加宽内容区以容纳 7 列表格 */
+/* 全部项目页：加宽内容区以容纳 6 列表格 */
 .ph-projects-page .VPDoc.has-aside .container,
 .ph-projects-page .VPDoc.has-aside .content,
 .ph-projects-page .VPDoc.has-aside .content-container {
@@ -275,11 +275,6 @@
 
 .vp-doc .ph-table-wrap th:nth-child(6),
 .vp-doc .ph-table-wrap td:nth-child(6) {
-  width: 10%;
-}
-
-.vp-doc .ph-table-wrap th:nth-child(7),
-.vp-doc .ph-table-wrap td:nth-child(7) {
   width: 26%;
 }
 
