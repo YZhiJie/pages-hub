@@ -180,9 +180,7 @@ function renderMarkdown(data) {
   const rows = data.projects.map((project) => {
     const source = !project.sourceRepo
       ? "待补充"
-      : project.sourcePrivate
-        ? `[源码仓库（私有）](https://github.com/${owner}/${project.sourceRepo})`
-        : `[源码仓库](https://github.com/${owner}/${project.sourceRepo})`;
+      : `[源码仓库](https://github.com/${owner}/${project.sourceRepo})`;
     return `| ${project.title} | ${project.category} | [在线网址](${project.siteUrl}) | ${source} | [部署仓库](https://github.com/${owner}/${project.pagesRepo}) | ${formatDate(project.lastDeployAt)} |`;
   });
 
