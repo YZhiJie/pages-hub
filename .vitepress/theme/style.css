@@ -235,3 +235,47 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 项目清单表格：紧凑单行展示，超长时横向滚动 */
+.vp-doc .ph-table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.vp-doc .ph-table-wrap table {
+  display: table;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+  margin: 0;
+  overflow: visible;
+}
+
+.vp-doc .ph-table-wrap th,
+.vp-doc .ph-table-wrap td {
+  padding: 8px 12px;
+  border: 1px solid var(--vp-c-divider);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.vp-doc .ph-table-wrap th {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc .ph-table-wrap tbody tr:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc .ph-table-wrap a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.vp-doc .ph-table-wrap a:hover {
+  text-decoration: underline;
+}

@@ -181,15 +181,15 @@ function renderMarkdown(data) {
     const source = !project.sourceRepo
       ? "待补充"
       : project.sourcePrivate
-        ? `[私有仓库](https://github.com/${owner}/${project.sourceRepo})`
-        : `[源码仓库](https://github.com/${owner}/${project.sourceRepo})`;
+        ? `[私有](https://github.com/${owner}/${project.sourceRepo})`
+        : `[源码](https://github.com/${owner}/${project.sourceRepo})`;
     const status =
       project.status === "online"
         ? `在线 (${project.httpStatus})`
         : project.status === "offline"
           ? `异常${project.httpStatus ? ` (${project.httpStatus})` : ""}`
           : "未知";
-    return `| ${project.title} | ${project.category} | [在线站点](${project.siteUrl}) | ${source} | [部署仓库](https://github.com/${owner}/${project.pagesRepo}) | ${status} | ${formatDate(project.lastDeployAt)} |`;
+    return `| ${project.title} | ${project.category} | [站点](${project.siteUrl}) | ${source} | [部署](https://github.com/${owner}/${project.pagesRepo}) | ${status} | ${formatDate(project.lastDeployAt)} |`;
   });
 
   return `# 全部项目
@@ -199,9 +199,13 @@ function renderMarkdown(data) {
 
 共 ${data.stats.total} 个站点：在线 ${data.stats.online} 个，异常 ${data.stats.offline} 个，覆盖 ${data.stats.categories} 个分类。
 
-| 项目 | 分类 | 在线站点 | 源码仓库 | 部署仓库 | 状态 | 部署仓最近更新 |
+<div class="ph-table-wrap">
+
+| 项目 | 分类 | 站点 | 源码 | 部署 | 状态 | 最近更新 |
 | --- | --- | --- | --- | --- | --- | --- |
 ${rows.join("\n")}
+
+</div>
 `;
 }
 
