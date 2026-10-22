@@ -163,17 +163,17 @@ function formatDate(value) {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   }).format(new Date(value));
 }
 
 function sortProjects(a, b) {
-  const ca = categories.indexOf(a.category);
-  const cb = categories.indexOf(b.category);
-  if (ca !== cb) return (ca === -1 ? 999 : ca) - (cb === -1 ? 999 : cb);
-  return (
-    (a.order ?? 999) - (b.order ?? 999) ||
-    a.title.localeCompare(b.title, "zh-CN")
-  );
+  const da = a.lastDeployAt ? new Date(a.lastDeployAt).getTime() : 0;
+  const db = b.lastDeployAt ? new Date(b.lastDeployAt).getTime() : 0;
+  if (db !== da) return db - da;
+  return a.title.localeCompare(b.title, "zh-CN");
 }
 
 function renderMarkdown(data) {

@@ -261,7 +261,7 @@
 
 .vp-doc .ph-table-wrap th:nth-child(2),
 .vp-doc .ph-table-wrap td:nth-child(2) {
-  width: 16%;
+  width: 14%;
 }
 
 .vp-doc .ph-table-wrap th:nth-child(3),
@@ -270,17 +270,17 @@
 .vp-doc .ph-table-wrap td:nth-child(4),
 .vp-doc .ph-table-wrap th:nth-child(5),
 .vp-doc .ph-table-wrap td:nth-child(5) {
-  width: 7%;
+  width: 6%;
 }
 
 .vp-doc .ph-table-wrap th:nth-child(6),
 .vp-doc .ph-table-wrap td:nth-child(6) {
-  width: 11%;
+  width: 10%;
 }
 
 .vp-doc .ph-table-wrap th:nth-child(7),
 .vp-doc .ph-table-wrap td:nth-child(7) {
-  width: 12%;
+  width: 26%;
 }
 
 .vp-doc .ph-table-wrap th,
