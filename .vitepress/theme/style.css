@@ -236,7 +236,11 @@
   }
 }
 
-/* 全部项目页：加宽内容区以容纳 6 列表格 */
+/* 全部项目页：隐藏右侧空大纲栏，让内容区铺满并居中 */
+.ph-projects-page .VPDoc .aside {
+  display: none;
+}
+
 .ph-projects-page .VPDoc.has-aside .container,
 .ph-projects-page .VPDoc.has-aside .content,
 .ph-projects-page .VPDoc.has-aside .content-container {
