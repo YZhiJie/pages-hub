@@ -192,7 +192,11 @@ function renderMarkdown(data) {
     return `| ${project.title} | ${project.category} | [站点](${project.siteUrl}) | ${source} | [部署](https://github.com/${owner}/${project.pagesRepo}) | ${status} | ${formatDate(project.lastDeployAt)} |`;
   });
 
-  return `# 全部项目
+  return `---
+pageClass: ph-projects-page
+---
+
+# 全部项目
 
 > 本页由 \`pnpm sync\` 自动生成，最近同步：${formatDate(data.syncedAt)}（Asia/Shanghai）。
 > 请勿手动编辑；如需调整标题、简介或分类，请修改 \`data/catalog.json\`。

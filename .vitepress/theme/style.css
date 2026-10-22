@@ -236,16 +236,22 @@
   }
 }
 
-/* 项目清单表格：紧凑单行展示，超长时横向滚动 */
+/* 全部项目页：加宽内容区以容纳 7 列表格 */
+.ph-projects-page .VPDoc.has-aside .container,
+.ph-projects-page .VPDoc.has-aside .content,
+.ph-projects-page .VPDoc.has-aside .content-container {
+  max-width: none;
+}
+
+/* 项目清单表格：固定布局铺满内容宽度，单行展示，超长省略号截断 */
 .vp-doc .ph-table-wrap {
-  overflow-x: auto;
   margin: 20px 0;
 }
 
 .vp-doc .ph-table-wrap table {
   display: table;
-  width: max-content;
-  min-width: 100%;
+  table-layout: fixed;
+  width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   white-space: nowrap;
@@ -253,12 +259,38 @@
   overflow: visible;
 }
 
+.vp-doc .ph-table-wrap th:nth-child(2),
+.vp-doc .ph-table-wrap td:nth-child(2) {
+  width: 16%;
+}
+
+.vp-doc .ph-table-wrap th:nth-child(3),
+.vp-doc .ph-table-wrap td:nth-child(3),
+.vp-doc .ph-table-wrap th:nth-child(4),
+.vp-doc .ph-table-wrap td:nth-child(4),
+.vp-doc .ph-table-wrap th:nth-child(5),
+.vp-doc .ph-table-wrap td:nth-child(5) {
+  width: 7%;
+}
+
+.vp-doc .ph-table-wrap th:nth-child(6),
+.vp-doc .ph-table-wrap td:nth-child(6) {
+  width: 11%;
+}
+
+.vp-doc .ph-table-wrap th:nth-child(7),
+.vp-doc .ph-table-wrap td:nth-child(7) {
+  width: 12%;
+}
+
 .vp-doc .ph-table-wrap th,
 .vp-doc .ph-table-wrap td {
-  padding: 8px 12px;
+  padding: 8px 10px;
   border: 1px solid var(--vp-c-divider);
   text-align: left;
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vp-doc .ph-table-wrap th {

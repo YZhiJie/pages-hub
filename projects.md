@@ -1,3 +1,7 @@
+---
+pageClass: ph-projects-page
+---
+
 # 全部项目
 
 > 本页由 `pnpm sync` 自动生成，最近同步：2026/10/22（Asia/Shanghai）。
