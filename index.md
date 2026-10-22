@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Pages Hub
   text: GitHub Pages 项目一站式导航
-  tagline: 汇总全部在线文档站与演示站的访问地址、源码仓库与部署状态，手动同步、打开即校准
+  tagline: 汇总全部在线文档站与演示站的访问地址、源码仓库与部署状态，推送即同步、打开即校准
   actions:
     - theme: brand
       text: 浏览全部项目
@@ -18,8 +18,8 @@ features:
     details: 把分散在不同仓库的 Pages 站点收拢到同一页面，按分类、状态和关键词快速定位。
   - title: 源码可追溯
     details: 每个在线站点同时给出源码仓库与部署仓库地址，私有源码会明确标注访问范围。
-  - title: 手动同步 + 实时校准
-    details: GitHub Actions 手动触发全量同步，页面打开期间每 5 分钟校准可达性。
+  - title: 推送即同步 + 实时校准
+    details: push 到 main 后 GitHub Actions 自动全量同步并部署，页面打开期间每 5 分钟校准可达性。
 ---
 
 ## 这个网站的作用

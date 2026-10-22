@@ -29,7 +29,7 @@ VitePress 构建 → GitHub Pages
 
 | 链路 | 触发方式 | 同步内容 | 频率 |
 | --- | --- | --- | --- |
-| 手动同步 | `workflow_dispatch` | 全量仓库、Pages 配置、部署时间、可达性 | 按需 |
+| 构建同步 | `push` 到 `main` / `workflow_dispatch` | 全量仓库、Pages 配置、部署时间、可达性 | 每次推送 / 按需 |
 | 页面内校准 | 浏览器定时器 | 公开仓库更新时间 + 站点可达性 | 每 5 分钟 |
 
 CI 与页面内校准的分工：
@@ -86,7 +86,7 @@ CI 与页面内校准的分工：
 
 ## 已知限制
 
-- GitHub Actions 不会自动运行，数据以最近一次手动触发的构建为准；如需更新，请在 Actions 页面执行 `deploy-pages-hub`。
+- 数据以最近一次构建为准；推送到 `main` 会自动触发 `deploy-pages-hub`，也可在 Actions 页面手动执行。
 - GitHub Pages 默认带有约 10 分钟的 CDN 缓存，刚部署完的页面可能短暂显示旧内容。
 - 浏览器端未认证调用 GitHub API 受每小时 60 次的限额约束；本站每 5 分钟只请求一次仓库列表，正常浏览不会触发限额。
 - 默认的 `GITHUB_TOKEN` 无法读取私有源码仓库。若需要同步私有仓库的更新时间，请在仓库 Secrets 中配置 `PAGES_SYNC_TOKEN`（具备 `repo` 读取权限的 PAT），工作流会自动优先使用它。
