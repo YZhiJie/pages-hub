@@ -53,7 +53,7 @@ export default defineConfig({
     },
     footer: {
       message:
-        "数据由 GitHub API 在每次推送时自动同步，页面内每 5 分钟自动校准",
+        "数据由 GitHub API 在每次推送时自动同步，页面内可手动立即校准",
       copyright: "Pages Hub",
     },
   },

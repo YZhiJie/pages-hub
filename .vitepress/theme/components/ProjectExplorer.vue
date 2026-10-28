@@ -1,10 +1,18 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import snapshot from "../../../data/projects.json";
+import catalog from "../../../data/catalog.json";
 
 const OWNER = snapshot.owner;
 const API = "https://api.github.com";
-const AUTO_REFRESH_MS = 5 * 60 * 1000;
+
+const catalogByPagesRepo = new Map(
+  catalog.projects.map((item) => [item.pagesRepo, item]),
+);
+const categoryOrder = catalog.categories;
+const snapshotByPagesRepo = new Map(
+  snapshot.projects.map((item) => [item.pagesRepo, item]),
+);
 
 const projects = ref(snapshot.projects.map((project) => ({ ...project })));
 const query = ref("");
@@ -13,9 +21,17 @@ const statusFilter = ref("全部");
 const refreshing = ref(false);
 const lastChecked = ref(snapshot.syncedAt);
 const errorMessage = ref("");
-let timer = null;
+const noticeMessage = ref("");
+let rateRemaining = null;
 
-const categories = snapshot.categories;
+const categories = computed(() => {
+  const used = [...new Set(projects.value.map((project) => project.category))];
+  return used.sort((a, b) => {
+    const ia = categoryOrder.indexOf(a);
+    const ib = categoryOrder.indexOf(b);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
+});
 
 const visibleProjects = computed(() => {
   const keyword = query.value.trim().toLowerCase();
@@ -84,15 +100,27 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+async function api(pathname) {
+  const res = await fetch(`${API}${pathname}`, {
+    headers: { Accept: "application/vnd.github+json" },
+    cache: "no-store",
+  });
+  const remaining = res.headers.get("x-ratelimit-remaining");
+  if (remaining !== null) rateRemaining = Number(remaining);
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    const detail = body?.message ? `（${body.message}）` : "";
+    throw new Error(`GitHub API ${res.status}${detail}`);
+  }
+  return res.json();
+}
+
 async function fetchPublicRepos() {
   const repos = [];
   for (let page = 1; page <= 3; page += 1) {
-    const res = await fetch(
-      `${API}/users/${OWNER}/repos?per_page=100&page=${page}&sort=updated`,
-      { headers: { Accept: "application/vnd.github+json" } },
+    const batch = await api(
+      `/users/${OWNER}/repos?per_page=100&page=${page}&sort=updated`,
     );
-    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-    const batch = await res.json();
     repos.push(...batch);
     if (batch.length < 100) break;
   }
@@ -116,74 +144,117 @@ async function mapLimit(items, limit, worker) {
   return results;
 }
 
-async function probeSite(url) {
+async function requestHead(url, mode) {
   const controller = new AbortController();
   const timerId = setTimeout(() => controller.abort(), 10000);
   try {
-    const res = await fetch(url, {
+    return await fetch(url, {
       method: "HEAD",
-      mode: "cors",
+      mode,
       cache: "no-store",
       signal: controller.signal,
     });
-    const ok = res.status >= 200 && res.status < 400;
-    return { status: ok ? "online" : "offline", httpStatus: res.status };
-  } catch {
-    try {
-      await fetch(url, {
-        method: "HEAD",
-        mode: "no-cors",
-        cache: "no-store",
-        signal: controller.signal,
-      });
-      return { status: "online", httpStatus: null };
-    } catch {
-      return { status: "offline", httpStatus: null };
-    }
   } finally {
     clearTimeout(timerId);
   }
 }
 
-async function refresh({ silent = false } = {}) {
+async function probeSite(url) {
+  try {
+    const res = await requestHead(url, "cors");
+    const ok = res.status >= 200 && res.status < 400;
+    return { status: ok ? "online" : "offline", httpStatus: res.status };
+  } catch {
+    try {
+      await requestHead(url, "no-cors");
+      return { status: "online", httpStatus: null };
+    } catch {
+      return { status: "offline", httpStatus: null };
+    }
+  }
+}
+
+function normalizeSiteUrl(repoName) {
+  return `https://${OWNER.toLowerCase()}.github.io/${repoName}/`;
+}
+
+function inferSourceRepo(pagesRepo, repoNames) {
+  const striped = pagesRepo.replace(/-(pages|site|comics|docs|web)$/, "");
+  if (striped !== pagesRepo && repoNames.has(striped)) return striped;
+  return repoNames.has(pagesRepo) ? pagesRepo : "";
+}
+
+function sortProjects(a, b) {
+  const da = a.lastDeployAt ? new Date(a.lastDeployAt).getTime() : 0;
+  const db = b.lastDeployAt ? new Date(b.lastDeployAt).getTime() : 0;
+  if (db !== da) return db - da;
+  return (a.title || "").localeCompare(b.title || "", "zh-CN");
+}
+
+async function refresh() {
   if (refreshing.value) return;
-  if (silent && document.visibilityState === "hidden") return;
   refreshing.value = true;
   errorMessage.value = "";
+  noticeMessage.value = "";
   try {
     const repos = await fetchPublicRepos();
-    const probes = await mapLimit(projects.value, 6, (project) =>
-      probeSite(project.siteUrl),
-    );
-    const repoByName = new Map(repos.map((repo) => [repo.name, repo]));
-    const checkedAt = new Date().toISOString();
+    const repoNames = new Set(repos.map((repo) => repo.name));
+    const pagesRepos = repos.filter((repo) => repo.has_pages === true);
+    if (pagesRepos.length === 0) {
+      throw new Error("未发现启用 GitHub Pages 的仓库");
+    }
 
-    projects.value = projects.value.map((project, index) => {
-      const repo = repoByName.get(project.pagesRepo);
+    const checkedAt = new Date().toISOString();
+    const discovered = await mapLimit(pagesRepos, 6, async (repo) => {
+      const entry = catalogByPagesRepo.get(repo.name) || {};
+      const previous = snapshotByPagesRepo.get(repo.name) || {};
+      const sourceRepo =
+        entry.sourceRepo ||
+        previous.sourceRepo ||
+        inferSourceRepo(repo.name, repoNames);
+      const siteUrl = previous.siteUrl || normalizeSiteUrl(repo.name);
+      const probe = await probeSite(siteUrl);
+
       return {
-        ...project,
-        status: probes[index].status,
-        httpStatus: probes[index].httpStatus,
-        lastDeployAt: repo?.pushed_at || project.lastDeployAt,
+        pagesRepo: repo.name,
+        pagesRepoUrl: `https://github.com/${OWNER}/${repo.name}`,
+        siteUrl,
+        sourceRepo,
+        sourceUrl: sourceRepo
+          ? `https://github.com/${OWNER}/${sourceRepo}`
+          : "",
+        sourcePrivate: Boolean(entry.sourcePrivate ?? previous.sourcePrivate),
+        title: entry.title || previous.title || repo.name,
+        summary:
+          entry.summary ||
+          previous.summary ||
+          repo.description ||
+          "暂无简介",
+        category: entry.category || previous.category || "未分类",
+        tags: entry.tags || previous.tags || [],
+        branch: previous.branch || "",
+        buildType: previous.buildType || "",
+        cname: previous.cname || "",
+        status: probe.status,
+        httpStatus: probe.httpStatus,
+        lastDeployAt: repo.pushed_at || "",
+        sourceUpdatedAt: previous.sourceUpdatedAt || "",
         checkedAt,
       };
     });
+
+    projects.value = discovered.sort(sortProjects);
+    if (!categories.value.includes(category.value)) category.value = "全部";
     lastChecked.value = checkedAt;
+    noticeMessage.value = `已同步 ${discovered.length} 个 Pages 站点${
+      rateRemaining !== null ? `，接口剩余配额 ${rateRemaining} 次` : ""
+    }。`;
   } catch (error) {
-    errorMessage.value = `实时校准失败：${error.message}，当前展示构建期快照。`;
+    errorMessage.value = `校准失败：${error.message}，当前展示上次同步的数据。`;
   } finally {
     refreshing.value = false;
   }
 }
-
-onMounted(() => {
-  window.setTimeout(() => refresh({ silent: true }), 800);
-  timer = window.setInterval(() => refresh({ silent: true }), AUTO_REFRESH_MS);
-});
-
-onBeforeUnmount(() => {
-  if (timer) window.clearInterval(timer);
-});
 </script>
 
 <template>
@@ -277,9 +348,10 @@ onBeforeUnmount(() => {
     </div>
 
     <p class="ph-note">
-      构建期快照：{{ formatTime(lastChecked) }}（Asia/Shanghai）。打开页面后每 5
-      分钟自动校准站点可达性与公开仓库更新时间；完整数据由 GitHub Actions
-      在每次推送时同步。
+      数据时间：{{ formatTime(lastChecked) }}（Asia/Shanghai）。点击「立即校准」会重新拉取全部
+      Pages 仓库、部署地址与可达性并替换下方数据；浏览器匿名调用 GitHub API
+      受每小时 60 次限额约束。
+      <span v-if="noticeMessage" class="ph-notice">{{ noticeMessage }}</span>
       <span v-if="errorMessage" class="ph-error">{{ errorMessage }}</span>
     </p>
   </section>

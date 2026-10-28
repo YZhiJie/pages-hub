@@ -226,6 +226,10 @@
   color: var(--ph-offline);
 }
 
+.ph-notice {
+  color: var(--vp-c-brand-1);
+}
+
 @media (max-width: 640px) {
   .ph-explorer {
     padding: 0 16px;
