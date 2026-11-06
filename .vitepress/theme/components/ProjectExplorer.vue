@@ -1,10 +1,125 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import snapshot from "../../../data/projects.json";
 import catalog from "../../../data/catalog.json";
 
 const OWNER = snapshot.owner;
 const API = "https://api.github.com";
+const CACHE_KEY = "pages-hub:calibration";
+const CACHE_VERSION = 1;
+const CACHE_TTL_HOURS = 24;
+const CACHE_TTL = CACHE_TTL_HOURS * 60 * 60 * 1000;
+
+function removeCache() {
+  try {
+    window.localStorage.removeItem(CACHE_KEY);
+  } catch {
+    /* 隐私模式或存储受限时忽略 */
+  }
+}
+
+function normalizeCachedProject(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  if (typeof raw.pagesRepo !== "string" || !raw.pagesRepo) return null;
+  if (typeof raw.title !== "string" || !raw.siteUrl) return null;
+  return {
+    pagesRepo: raw.pagesRepo,
+    pagesRepoUrl:
+      typeof raw.pagesRepoUrl === "string"
+        ? raw.pagesRepoUrl
+        : `https://github.com/${OWNER}/${raw.pagesRepo}`,
+    siteUrl: String(raw.siteUrl),
+    sourceRepo: typeof raw.sourceRepo === "string" ? raw.sourceRepo : "",
+    sourceUrl: typeof raw.sourceUrl === "string" ? raw.sourceUrl : "",
+    sourcePrivate: Boolean(raw.sourcePrivate),
+    title: raw.title,
+    summary: typeof raw.summary === "string" ? raw.summary : "暂无简介",
+    category:
+      typeof raw.category === "string" && raw.category
+        ? raw.category
+        : "未分类",
+    tags: Array.isArray(raw.tags)
+      ? raw.tags.filter((tag) => typeof tag === "string")
+      : [],
+    status: ["online", "offline", "unknown"].includes(raw.status)
+      ? raw.status
+      : "unknown",
+    httpStatus: Number.isFinite(raw.httpStatus) ? raw.httpStatus : null,
+    lastDeployAt:
+      typeof raw.lastDeployAt === "string" ? raw.lastDeployAt : "",
+    sourceUpdatedAt:
+      typeof raw.sourceUpdatedAt === "string" ? raw.sourceUpdatedAt : "",
+    checkedAt: typeof raw.checkedAt === "string" ? raw.checkedAt : "",
+  };
+}
+
+function readCache() {
+  if (typeof window === "undefined") return null;
+  let raw;
+  try {
+    raw = window.localStorage.getItem(CACHE_KEY);
+  } catch {
+    return null;
+  }
+  if (!raw) return null;
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    removeCache();
+    return null;
+  }
+
+  if (
+    !parsed ||
+    parsed.version !== CACHE_VERSION ||
+    parsed.owner !== OWNER ||
+    !Array.isArray(parsed.projects)
+  ) {
+    removeCache();
+    return null;
+  }
+
+  const checkedTime = Date.parse(parsed.checkedAt);
+  if (!Number.isFinite(checkedTime)) {
+    removeCache();
+    return null;
+  }
+
+  const snapshotTime = Date.parse(snapshot.syncedAt);
+  if (Number.isFinite(snapshotTime) && checkedTime <= snapshotTime) {
+    // 构建期快照比本地校准更新，优先展示快照
+    return null;
+  }
+
+  const entries = parsed.projects.map(normalizeCachedProject).filter(Boolean);
+  if (!entries.length) {
+    removeCache();
+    return null;
+  }
+
+  return { checkedAt: parsed.checkedAt, projects: entries.sort(sortProjects) };
+}
+
+function writeCache(entries, checkedAt) {
+  if (typeof window === "undefined") return false;
+  try {
+    window.localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        version: CACHE_VERSION,
+        owner: OWNER,
+        savedAt: new Date().toISOString(),
+        checkedAt,
+        projects: entries,
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const catalogByPagesRepo = new Map(
   catalog.projects.map((item) => [item.pagesRepo, item]),
@@ -22,7 +137,12 @@ const refreshing = ref(false);
 const lastChecked = ref(snapshot.syncedAt);
 const errorMessage = ref("");
 const noticeMessage = ref("");
+const dataSource = ref("snapshot");
+const cachePersisted = ref(true);
+const now = ref(Date.now());
+let clockId = null;
 let rateRemaining = null;
+let rateReset = null;
 
 const categories = computed(() => {
   const used = [...new Set(projects.value.map((project) => project.category))];
@@ -76,7 +196,8 @@ function statusText(project) {
 }
 
 function formatDate(value) {
-  if (!value) return "—";
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat("zh-CN", {
     timeZone: "Asia/Shanghai",
     year: "numeric",
@@ -85,11 +206,12 @@ function formatDate(value) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function formatTime(value) {
-  if (!value) return "—";
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat("zh-CN", {
     timeZone: "Asia/Shanghai",
     month: "2-digit",
@@ -97,22 +219,72 @@ function formatTime(value) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
 }
 
-async function api(pathname) {
-  const res = await fetch(`${API}${pathname}`, {
-    headers: { Accept: "application/vnd.github+json" },
-    cache: "no-store",
-  });
-  const remaining = res.headers.get("x-ratelimit-remaining");
-  if (remaining !== null) rateRemaining = Number(remaining);
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    const detail = body?.message ? `（${body.message}）` : "";
-    throw new Error(`GitHub API ${res.status}${detail}`);
+const sourceLabel = computed(() => {
+  if (dataSource.value === "live") {
+    return cachePersisted.value ? "实时同步" : "实时同步（未持久化）";
   }
-  return res.json();
+  if (dataSource.value === "cache") return "上次同步（本地缓存）";
+  return "构建期快照";
+});
+
+const dataAgeText = computed(() => {
+  if (dataSource.value === "snapshot") return "";
+  const time = Date.parse(lastChecked.value);
+  if (!Number.isFinite(time)) return "";
+  const diff = now.value - time;
+  if (diff < 0) return "";
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return "刚刚同步";
+  if (minutes < 60) return `${minutes} 分钟前同步`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < CACHE_TTL_HOURS) return `${hours} 小时前同步`;
+  return `${Math.floor(hours / 24)} 天前同步`;
+});
+
+const dataStale = computed(() => {
+  if (dataSource.value === "snapshot") return false;
+  const time = Date.parse(lastChecked.value);
+  return Number.isFinite(time) && now.value - time > CACHE_TTL;
+});
+
+async function api(pathname) {
+  const controller = new AbortController();
+  const timerId = setTimeout(() => controller.abort(), 12000);
+  try {
+    const res = await fetch(`${API}${pathname}`, {
+      headers: { Accept: "application/vnd.github+json" },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    const remaining = res.headers.get("x-ratelimit-remaining");
+    if (remaining !== null) rateRemaining = Number(remaining);
+    const reset = res.headers.get("x-ratelimit-reset");
+    if (reset !== null) rateReset = Number(reset);
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      const detail = body?.message ? `（${body.message}）` : "";
+      const resetText = Number.isFinite(rateReset)
+        ? formatTime(new Date(rateReset * 1000).toISOString())
+        : "";
+      const quota = res.status === 403 || res.status === 429;
+      throw new Error(
+        `GitHub API ${res.status}${detail}${
+          quota && resetText ? `，配额预计 ${resetText} 重置` : ""
+        }`,
+      );
+    }
+    return res.json();
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("GitHub API 请求超时（12 秒）");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timerId);
+  }
 }
 
 async function fetchPublicRepos() {
@@ -191,7 +363,7 @@ function sortProjects(a, b) {
   return (a.title || "").localeCompare(b.title || "", "zh-CN");
 }
 
-async function refresh() {
+async function refresh({ auto = false } = {}) {
   if (refreshing.value) return;
   refreshing.value = true;
   errorMessage.value = "";
@@ -246,15 +418,49 @@ async function refresh() {
     projects.value = discovered.sort(sortProjects);
     if (!categories.value.includes(category.value)) category.value = "全部";
     lastChecked.value = checkedAt;
-    noticeMessage.value = `已同步 ${discovered.length} 个 Pages 站点${
-      rateRemaining !== null ? `，接口剩余配额 ${rateRemaining} 次` : ""
-    }。`;
+    dataSource.value = "live";
+    cachePersisted.value = writeCache(discovered, checkedAt);
+    const quota =
+      rateRemaining !== null ? `，接口剩余配额 ${rateRemaining} 次` : "";
+    const persistence = cachePersisted.value
+      ? "，结果已保存到本浏览器作为后备。"
+      : "；本地缓存不可用，刷新后将回到构建期快照。";
+    noticeMessage.value = `${
+      auto ? "已自动同步" : "已同步"
+    } ${discovered.length} 个 Pages 站点${quota}${persistence}`;
   } catch (error) {
-    errorMessage.value = `校准失败：${error.message}，当前展示上次同步的数据。`;
+    const fallback =
+      dataSource.value === "live"
+        ? "当前实时同步的数据"
+        : dataSource.value === "cache"
+          ? "上次同步的数据"
+          : "构建期快照";
+    errorMessage.value = `${
+      auto ? "自动同步失败" : "校准失败"
+    }：${error.message}，当前仍展示${fallback}。`;
   } finally {
     refreshing.value = false;
   }
 }
+
+onMounted(() => {
+  const cached = readCache();
+  if (cached) {
+    projects.value = cached.projects;
+    lastChecked.value = cached.checkedAt;
+    dataSource.value = "cache";
+    cachePersisted.value = true;
+    if (!categories.value.includes(category.value)) category.value = "全部";
+  }
+  clockId = window.setInterval(() => {
+    now.value = Date.now();
+  }, 60000);
+  refresh({ auto: true });
+});
+
+onUnmounted(() => {
+  if (clockId !== null) window.clearInterval(clockId);
+});
 </script>
 
 <template>
@@ -280,6 +486,20 @@ async function refresh() {
       <button class="ph-refresh" :disabled="refreshing" @click="refresh()">
         {{ refreshing ? "校准中…" : "立即校准" }}
       </button>
+    </div>
+
+    <div class="ph-source" :class="{ stale: dataStale }">
+      <span :class="['ph-source-tag', dataSource]">{{ sourceLabel }}</span>
+      <span>数据时间：{{ formatTime(lastChecked) }}（Asia/Shanghai）</span>
+      <span v-if="dataSource !== 'snapshot'" class="ph-source-age">
+        {{ dataAgeText
+        }}<template v-if="dataStale"
+          >，已超过 {{ CACHE_TTL_HOURS }} 小时，建议重新校准</template
+        >
+      </span>
+      <span v-if="refreshing" class="ph-source-loading">
+        正在同步最新数据…
+      </span>
     </div>
 
     <div class="ph-stats">
@@ -348,9 +568,9 @@ async function refresh() {
     </div>
 
     <p class="ph-note">
-      数据时间：{{ formatTime(lastChecked) }}（Asia/Shanghai）。点击「立即校准」会重新拉取全部
-      Pages 仓库、部署地址与可达性并替换下方数据；浏览器匿名调用 GitHub API
-      受每小时 60 次限额约束。
+      页面打开时会自动同步公开仓库信息与站点可达性；Pages
+      构建配置、私有源码更新时间等字段仍来自构建期快照。同步结果会保存在本浏览器，作为下次加载时的后备数据。浏览器匿名调用
+      GitHub API 受每小时 60 次限额约束，超限时会保留当前数据并提示重置时间。
       <span v-if="noticeMessage" class="ph-notice">{{ noticeMessage }}</span>
       <span v-if="errorMessage" class="ph-error">{{ errorMessage }}</span>
     </p>
